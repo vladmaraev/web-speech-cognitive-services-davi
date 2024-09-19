@@ -190,7 +190,7 @@ class SpeechRecognition {
 
         this.initRecognizer(fetchCredentials, speechRecognitionEndpointId, data?.timerBeforeSpeechEnd);
       } catch (e) {
-        console.warn(e)
+        console.warn(e);
       }
     }
   }
@@ -277,7 +277,7 @@ class SpeechRecognition {
     this._debug && console.log('Recognition aborted');
   };
 
-  onresult = (value: Array<SpeechRecognitionResultListItem> | SpeechRecognitionResultList): void => {
+  onresult = (value: SpeechRecognitionResultList): void => {
     this._debug && console.log('Result : ', value);
   };
 
@@ -303,7 +303,11 @@ class SpeechRecognition {
    * @param fetchCredentials Function
    * @param speechRecognitionEndpointId string | undefined
    */
-  initRecognizer = async (fetchCredentials: Function, speechRecognitionEndpointId?: string, timerBeforeSpeechEnd?: number): Promise<void> => {
+  initRecognizer = async (
+    fetchCredentials: Function,
+    speechRecognitionEndpointId?: string,
+    timerBeforeSpeechEnd?: number
+  ): Promise<void> => {
     const {
       authorizationToken,
       region = 'westus',
@@ -333,7 +337,11 @@ class SpeechRecognition {
 
       this.speechConfig.outputFormat = SDK.OutputFormat.Detailed;
       this.speechConfig.speechRecognitionLanguage = this._lang || 'en-US';
-      timerBeforeSpeechEnd && this.speechConfig.setProperty(SDK.PropertyId[SDK.PropertyId.Speech_SegmentationSilenceTimeoutMs], `${timerBeforeSpeechEnd}`);
+      timerBeforeSpeechEnd &&
+        this.speechConfig.setProperty(
+          SDK.PropertyId[SDK.PropertyId.Speech_SegmentationSilenceTimeoutMs],
+          `${timerBeforeSpeechEnd}`
+        );
 
       this._autoStart && this.start();
     }
@@ -564,7 +572,8 @@ class SpeechRecognition {
             type: string;
             data?: string | { results: Array<SpeechRecognitionResultListItem> | SpeechRecognitionResultList };
           } | null = null;
-          let finalizedResults: Array<SpeechRecognitionResultListItem> | SpeechRecognitionResultList = [];
+          let finalizedResults: SpeechRecognitionResultList = [];
+          finalizedResults.isFinal = false;
 
           for (let loop = 0; !stopping || audioStarted; loop++) {
             const event = await queue.shift();
@@ -686,6 +695,7 @@ class SpeechRecognition {
 
                   if (recognizable) {
                     finalizedResults = [...finalizedResults, ...result];
+                    finalizedResults.isFinal = result.isFinal;
 
                     if (this._interimResults) {
                       this.processSendEvent('result', {

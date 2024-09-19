@@ -21,7 +21,6 @@ export default function (
         transcript: result.text
       }
     ];
-
     if (result.reason === RecognizedSpeech) {
       resultList.isFinal = true;
     }
