@@ -1,4 +1,4 @@
-import * as SDK from 'microsoft-cognitiveservices-speech-sdk'
+import * as SDK from 'microsoft-cognitiveservices-speech-sdk';
 import patchOptions from '../patchOptions';
 import SpeechSynthesisUtterance from './SpeechSynthesisUtterance';
 import SpeechSynthesisVoice from './SpeechSynthesisVoice';
@@ -90,12 +90,12 @@ class SpeechSynthesis {
   // Function to recreate the synthesizer
   createSynthesizer(voice: string | undefined, stream: SDK.AudioOutputStream | undefined | null): void {
     if (stream) {
-      this.audioConfig = SDK.AudioConfig.fromStreamOutput(stream)
+      this.audioConfig = SDK.AudioConfig.fromStreamOutput(stream);
     } else {
       this.speakerAudioDestination = new SDK.SpeakerAudioDestination();
       this.audioConfig = SDK.AudioConfig.fromSpeakerOutput(this.speakerAudioDestination);
     }
-    
+
     if (this.speechConfig) {
       if (voice) {
         const tempSpeechConfig = this.speechConfig;
@@ -147,11 +147,9 @@ class SpeechSynthesis {
   // Function that returns an empty array of available voices
   getVoices = (): Array<SpeechSynthesisVoice> => {
     return [];
-  }
+  };
 
-  onvoiceschanged = (): void => {
-    console.log('Voices changed')
-  }
+  onvoiceschanged = (): void => {};
 
   /**
    * Add events listeners to the events received by the synthesizer if callbakcs are given in the utterance
@@ -161,17 +159,17 @@ class SpeechSynthesis {
     if (this.synth) {
       // Events callbacks
       this.synth.synthesisStarted = () => {
-        utterance.onsynthesisstart && utterance.onsynthesisstart()
+        utterance.onsynthesisstart && utterance.onsynthesisstart();
         this.synthesizing = true;
       };
 
       this.synth.synthesisCompleted = () => {
-        utterance.onsynthesiscompleted && utterance.onsynthesiscompleted()
+        utterance.onsynthesiscompleted && utterance.onsynthesiscompleted();
         this.synthesizing = false;
       };
 
       this.synth.wordBoundary = (synth, e) => {
-        !synth && console.warn('No synthesizer')
+        !synth && console.warn('No synthesizer');
         const data = {
           boundaryType: e.boundaryType,
           name: e.text,
@@ -183,20 +181,20 @@ class SpeechSynthesis {
       };
 
       this.synth.visemeReceived = (synth, e) => {
-        !synth && console.warn('No synthesizer')
+        !synth && console.warn('No synthesizer');
         const data = {
           boundaryType: 'Viseme',
           name: `${e.visemeId}`,
           elapsedTime: e.audioOffset,
           duration: 0
-        }
+        };
 
         utterance.onboundary && utterance.onboundary(data);
         utterance.onviseme && utterance.onviseme(data);
       };
 
       this.synth.bookmarkReached = (synth, e) => {
-        !synth && console.warn('No synthesizer')
+        !synth && console.warn('No synthesizer');
         const data = {
           boundaryType: 'Mark',
           name: e.text,
@@ -211,7 +209,7 @@ class SpeechSynthesis {
 
   /**
    * Launch synthesis and play sound with the speech synthesizer
-   * @param {SpeechSynthesisUtterance} utterance 
+   * @param {SpeechSynthesisUtterance} utterance
    */
   speak(utterance: SpeechSynthesisUtterance, stream: SDK.AudioOutputStream | undefined | null) {
     // Test utterance
@@ -250,51 +248,53 @@ class SpeechSynthesis {
             processQueue(); // Process the next queued utterance after the current one has finished
           };
 
-          this.linkEventsCallbacks(currentUtterance)
+          this.linkEventsCallbacks(currentUtterance);
 
           return isSSML
-            ? new Promise((reject) => {
-              this.synth && this.synth.speakSsmlAsync(
-                  currentUtterance.text,
-                  result => {
-                    if (result) {
-                      this.synth && this.synth.close();
-                    } else {
-                      reject(new Error('No synthesis result.'));
+            ? new Promise(reject => {
+                this.synth &&
+                  this.synth.speakSsmlAsync(
+                    currentUtterance.text,
+                    result => {
+                      if (result) {
+                        this.synth && this.synth.close();
+                      } else {
+                        reject(new Error('No synthesis result.'));
+                      }
+                    },
+                    error => {
+                      reject(new Error(`Synthesis failed : ${error}`));
                     }
-                  },
-                  error => {
-                    reject(new Error(`Synthesis failed : ${error}`));
-                  }
-                );
+                  );
               })
-            : new Promise((reject) => {
-              this.synth && this.synth.speakTextAsync(
-                  currentUtterance.text,
-                  result => {
-                    if (result) {
-                      this.synth && this.synth.close();
-                    } else {
-                      reject(new Error('No synthesis result.'));
+            : new Promise(reject => {
+                this.synth &&
+                  this.synth.speakTextAsync(
+                    currentUtterance.text,
+                    result => {
+                      if (result) {
+                        this.synth && this.synth.close();
+                      } else {
+                        reject(new Error('No synthesis result.'));
+                      }
+                    },
+                    error => {
+                      reject(new Error(`Synthesis failed : ${error}`));
                     }
-                  },
-                  error => {
-                    reject(new Error(`Synthesis failed : ${error}`));
-                  }
-                );
+                  );
               });
-            }
+        }
       }
     };
-    
+
     processQueue(); // Start processing the queue
     this.canceled = false; // Reset canceled state after processing the queue
   }
 
   /**
    * Launch synthesis without sound being played and call callback function with an ArrayBuffer after synthesis finished, containing the sound data
-   * @param {SpeechSynthesisUtterance} utterance 
-   * @param {Function} callback 
+   * @param {SpeechSynthesisUtterance} utterance
+   * @param {Function} callback
    */
   synthesizeAndGetArrayData(utterance, callback) {
     // Test utterance
@@ -314,65 +314,63 @@ class SpeechSynthesis {
         this.synth = new SDK.SpeechSynthesizer(this.speechConfig, null);
       }
     }
-    
-    this.linkEventsCallbacks(utterance)
+
+    this.linkEventsCallbacks(utterance);
 
     try {
-      isSSML ?
-        this.synth && this.synth.speakSsmlAsync(
-          utterance.text,
-          result => {
-            if (result && result.audioData) {
-              callback(result.audioData);
-              this.synth && this.synth.close();
-            }
-            else {
+      isSSML
+        ? this.synth &&
+          this.synth.speakSsmlAsync(
+            utterance.text,
+            result => {
+              if (result && result.audioData) {
+                callback(result.audioData);
+                this.synth && this.synth.close();
+              } else {
+                callback(null);
+              }
+            },
+            error => {
+              console.error(error);
               callback(null);
             }
-          },
-          error => {
-            console.error(error)
-            callback(null);
-          })
-        :
-        this.synth && this.synth.speakTextAsync(
-          utterance.text,
-          result => {
-            if (result && result.audioData) {
-              callback(result.audioData);
-              this.synth && this.synth.close();
-            }
-            else {
+          )
+        : this.synth &&
+          this.synth.speakTextAsync(
+            utterance.text,
+            result => {
+              if (result && result.audioData) {
+                callback(result.audioData);
+                this.synth && this.synth.close();
+              } else {
+                callback(null);
+              }
+            },
+            error => {
+              console.error(error);
               callback(null);
             }
-          },
-          error => {
-            console.error(error)
-            callback(null);
-          });
-      }
-      catch (error) {
-          console.error(error);
-      }
+          );
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   // Asynchronous function that updates available voices
   async updateVoices() {
-    const voicesResult = this.synth ?
-      await this.synth.getVoicesAsync()
-      :
-      null
+    const voicesResult = this.synth ? await this.synth.getVoicesAsync() : null;
     const voices = voicesResult?.voices;
 
     if (Array.isArray(voices)) {
-      const formattedVoices: Array<SpeechSynthesisVoice> = voices.map(voice => 
-        new SpeechSynthesisVoice({
-          // eslint-disable-next-line no-magic-numbers
-          gender: voice.gender === 1 ? 'Female' : voice.gender === 2 ? 'Male' : 'Undefined',
-          lang: voice.locale,
-          voiceURI: voice.name
-        })
-      )
+      const formattedVoices: Array<SpeechSynthesisVoice> = voices.map(
+        voice =>
+          new SpeechSynthesisVoice({
+            // eslint-disable-next-line no-magic-numbers
+            gender: voice.gender === 1 ? 'Female' : voice.gender === 2 ? 'Male' : 'Undefined',
+            lang: voice.locale,
+            voiceURI: voice.name
+          })
+      );
 
       this.getVoices = () => formattedVoices;
     } else {
@@ -380,7 +378,7 @@ class SpeechSynthesis {
     }
 
     // Call 'onvoiceschanged' callback to notify the voices update
-    this.onvoiceschanged()
+    this.onvoiceschanged();
   }
 }
 

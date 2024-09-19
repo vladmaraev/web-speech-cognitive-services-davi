@@ -1,6 +1,6 @@
 /* eslint no-empty: ["error", { "allowEmptyCatch": true }] */
 import SpeechSynthesisVoice from './SpeechSynthesisVoice';
-import type { SpeechSynthesisEventProps } from '../../models/speechtypes'
+import type { SpeechSynthesisEventProps } from '../../models/speechtypes';
 
 class SpeechSynthesisUtterance extends EventTarget {
   _lang: string | undefined = undefined;
@@ -60,17 +60,19 @@ class SpeechSynthesisUtterance extends EventTarget {
 
   onend(): void {}
 
-  onerror(error: any): void { console.log(error) }
+  onerror(error: any): void {
+    console.log(error);
+  }
 
   onsynthesisstart(): void {}
 
   onsynthesiscompleted(): void {}
 
-  onboundary(data: SpeechSynthesisEventProps): void { console.log(data) }
+  onboundary(_data: SpeechSynthesisEventProps): void {}
 
-  onviseme(data: SpeechSynthesisEventProps): void { console.log(data) }
+  onviseme(_data: SpeechSynthesisEventProps): void {}
 
-  onmark(data: SpeechSynthesisEventProps): void { console.log(data) }
+  onmark(_data: SpeechSynthesisEventProps): void {}
 }
 
 export default SpeechSynthesisUtterance;
