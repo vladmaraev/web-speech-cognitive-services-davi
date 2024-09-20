@@ -1,6 +1,6 @@
 {
   "name": "@vladmaraev/web-speech-cognitive-services-davi",
-  "version": "2.0.10",
+  "version": "2.0.12",
   "description": "Polyfill Web Speech API with Cognitive Services Speech-to-Text service",
   "author": "DAVI",
   "license": "MIT",
@@ -11,9 +11,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "source": "src/index.ts",
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "scripts": {
     "start": "parcel watch",
     "build": "parcel build"
@@ -40,8 +38,5 @@
     "simple-update-in": "2.2.0"
   },
   "packageManager": "yarn@3.6.4+sha256.7f7d51b38db0d94adf25c512e3f3d3b47d23c97922eecc540f7440f116bdb99a",
-  "trustedDependencies": [
-    "core-js-pure",
-    "p-defer-es5"
-  ]
+  "trustedDependencies": ["core-js-pure", "p-defer-es5"]
 }

@@ -3,7 +3,7 @@ import { SpeechSynthesis, createSpeechSynthesisPonyfill } from './data/TextToSpe
 import fetchAuthorizationToken from './data/fetchAuthorizationToken';
 import SpeechSynthesisUtterance from './data/TextToSpeech/SpeechSynthesisUtterance';
 import SpeechGrammarList from './data/SpeechToText/SpeechGrammarList';
-import type { PonyfillOptions } from './models/credentialTypes';
+import type { PatchOptions } from './models/credentialTypes';
 import type {
   SpeechRecognitionProps,
   SpeechSynthesisPonyfillType,
@@ -15,10 +15,7 @@ import type {
   SpeechRecognitionResultListItem
 } from './models/speechtypes';
 
-export default function createSpeechServicesPonyfill(
-  options: PonyfillOptions,
-  recognitionData?: SpeechRecognitionProps
-) {
+export default function createSpeechServicesPonyfill(options: PatchOptions, recognitionData?: SpeechRecognitionProps) {
   return {
     ...createSpeechRecognitionPonyfill(options, recognitionData),
     ...createSpeechSynthesisPonyfill(options)
@@ -35,7 +32,7 @@ export {
 };
 
 export type {
-  PonyfillOptions,
+  PatchOptions,
   SpeechSynthesisPonyfillType,
   SpeechSynthesisEventProps,
   SpeechRecognitionProps,
